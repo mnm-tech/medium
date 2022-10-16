@@ -1,13 +1,13 @@
-### Kubernetes üzerinde helm kullanarak Harbor Registry kurulumu
+# Kubernetes üzerinde helm kullanarak Harbor Registry kurulumu
 
-# Giriş
+## Giriş
+<br>
 
-
-Merhabalar bu yazımda size Kubernetes üzerinde çalışacak şekilde Harbor Registry kurulumunu anlatmaya çalışacağım.
+Merhabalar bu yazımda size Kubernetes üzerinde çalışacak şekilde Harbor Registry kurulumunu anlatmaya çalışacağım. Öncelikle bir kaç ön bilgi vermekte fayda var diye düşünüyorum.
 
 <br>
 
-### Harbor Nedir?
+## Harbor Nedir?
 
 Harbor container imajlarınızı saklayabileceğiniz, dockerhub'a alternatif olarak da düşünebilieceğiniz bir üründür. İmajlarınızı dockerhub'a pushlarmak yerine kendi yönettiğiniz sunucucularınızda kuracağınız bir registry sunucusu kullanarak hem docker/kubernetes ortamlarınızın internete çıkmadan kendi lokal ağınızdaki bu sunucu ile iletişim kurarak hem dosya indirme boyutu hem de indirme süresi gibi değişkenleri azaltabilirsiniz.
 
@@ -15,14 +15,13 @@ Bu yazıda Harbor kurulumunu kubernetes ortamında gerçekleştireceğim.
 
 <br>
 
-
-
 Kurulum için ihtiyacım olanlar;
 
 - Kubernetes Cluster 
 - Helm
 - Harbor'un imajları saklaması için bir persistent volume
 
+<br>
 
 # Helm Nedir?
 
@@ -36,11 +35,13 @@ Ayrıca bu yazıda örnek bir helm chart olusturarak bu chart'i da kuracagimiz H
 # Persistent Volume nedir? 
 
 Containerlar stateless ortamlardır, yani bu ortamlarda uygulama calisirken üretilen datalar container öldüğünde kaybolur. Önemli datalarımız böyle bir şekilde kaybolmasın istersek bu dataları Persistent Volume denen objeler yaratarak bu objeleri dosya sistemine bağlayip container'i bu şekilde çalıştırmamız gerekiyor. Böyle yaptığımızda, ilgili container ölse bile yerine calisan container datalari yine ayni klasorde görecegi icin uygulamanız kaldigi yerden devam edecektir. 
-Ben PersistentVolume yaratmak için ```Portworx``` kullanacağım, farklı bir storage çözümü kullanıyorsanız siz de ona göre farklı bir ```StorageClass``` berlirtebilirsiniz. Portworx hakkında bilgi ve kurulum dökümanına asagidaki linkten ulasabilirsiniz. <br>
+Ben PersistentVolume yaratmak için ```Portworx``` kullanacağım, farklı bir storage çözümü kullanıyorsanız siz de ona göre farklı bir ```StorageClass``` berlirtebilirsiniz. Portworx hakkında bilgi ve kurulum dökümanına asagidaki linkten ulasabilirsiniz. 
+<br>
 
-https://medium.com/@mnmtech/portworx-deploy-kubernetes-1-25-2-eb5ce32f6696
+[MNM Technoloji'de Portworx kullanımı](https://medium.com/@mnmtech/portworx-deploy-kubernetes-1-25-2-eb5ce32f6696)
 
-# Kurulum
+<br>
+# Kurulum 
 
 Ben Harbor'u bitnami helm reposundaki chart'ı kullanarak kuracağım, ben hiç kullanmadım ama siz isterseniz harbor'un official chart'ını da kullanabilirsiniz. Ancak ben bitnami chart ve imajlarını çok beğendiğim ve diger ihtiyaclarim (nginx, mariadb, redis vs.) icin de kullandigimdan dolayi helm ile deploy edecek bir ürün ihtiyacım oldgunda ilk olarak bitnami repository'sini ziyaret ediyorum. Size de tavsiye ederim.
 
