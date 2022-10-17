@@ -1,11 +1,10 @@
 # Kubernetes üzerinde helm kullanarak Harbor Registry kurulumu
 
 ## Giriş
-<br>
 
 Merhabalar bu yazımda size Kubernetes üzerinde çalışacak şekilde Harbor Registry kurulumunu anlatmaya çalışacağım. Öncelikle bir kaç ön bilgi vermekte fayda var diye düşünüyorum.
 
-<br>
+
 
 ## Harbor Nedir?
 
@@ -13,15 +12,12 @@ Harbor container imajlarınızı saklayabileceğiniz, dockerhub'a alternatif ola
 
 Bu yazıda Harbor kurulumunu kubernetes ortamında gerçekleştireceğim.
 
-<br>
-
 Kurulum için ihtiyacım olanlar;
 
 - Kubernetes Cluster 
 - Helm
 - Harbor'un imajları saklaması için bir persistent volume
 
-<br>
 
 # Helm Nedir?
 
