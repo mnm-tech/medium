@@ -36,21 +36,17 @@ Ayrıca bu yazıda örnek bir helm chart olusturarak bu chart'i da kuracagimiz H
 
 Containerlar stateless ortamlardır, yani bu ortamlarda uygulama calisirken üretilen datalar container öldüğünde kaybolur. Önemli datalarımız böyle bir şekilde kaybolmasın istersek bu dataları Persistent Volume denen objeler yaratarak bu objeleri dosya sistemine bağlayip container'i bu şekilde çalıştırmamız gerekiyor. Böyle yaptığımızda, ilgili container ölse bile yerine calisan container datalari yine ayni klasorde görecegi icin uygulamanız kaldigi yerden devam edecektir. 
 Ben PersistentVolume yaratmak için ```Portworx``` kullanacağım, farklı bir storage çözümü kullanıyorsanız siz de ona göre farklı bir ```StorageClass``` berlirtebilirsiniz. Portworx hakkında bilgi ve kurulum dökümanına asagidaki linkten ulasabilirsiniz. 
-<br>
 
 [MNM Technoloji'de Portworx kullanımı](https://medium.com/@mnmtech/portworx-deploy-kubernetes-1-25-2-eb5ce32f6696)
 
-<br>
+
 # Kurulum 
 
 Ben Harbor'u bitnami helm reposundaki chart'ı kullanarak kuracağım, ben hiç kullanmadım ama siz isterseniz harbor'un official chart'ını da kullanabilirsiniz. Ancak ben bitnami chart ve imajlarını çok beğendiğim ve diger ihtiyaclarim (nginx, mariadb, redis vs.) icin de kullandigimdan dolayi helm ile deploy edecek bir ürün ihtiyacım oldgunda ilk olarak bitnami repository'sini ziyaret ediyorum. Size de tavsiye ederim.
 
-Bitnami Helm Reposu: 
-https://github.com/bitnami/charts/tree/master/bitnami/harbor
-https://bitnami.com/stack/harbor/helm
+[Bitnami Helm Reposu](https://github.com/bitnami/charts/tree/master/bitnami/harbor)
 
-Harbor Official Helm Reposu: 
-https://github.com/goharbor/harbor-helm
+[Harbor Official Helm Reposu](https://github.com/goharbor/harbor-helm)
 
 
 ---
@@ -79,10 +75,11 @@ NAME                    	CHART VERSION	APP VERSION	DESCRIPTION
 bitnami/harbor          	15.2.5       	2.6.1      	Harbor is an open source trusted cloud-native r...
 ```
 
-bitnami diye arattığınızda ise bitnami tarafında bir çok populer yazilima ait chartların oldugnuu görebilirsiniz.
+bitnami diye arattığınızda ise bitnami tarafında bir çok populer yazilima ait chartların oldugunu görebilirsiniz.
 
 ```
 [root@kemo-test harbor]# helm search repo bitnami| grep -v DEPRECATED
+
 NAME                                        	CHART VERSION	APP VERSION  	DESCRIPTION                                       
 bitnami/airflow                             	13.1.6       	2.3.4        	Apache Airflow is a tool to express and execute...
 bitnami/apache                              	9.2.5        	2.4.54       	Apache HTTP Server is an open-source HTTP serve...
@@ -241,6 +238,7 @@ Not: Bu kurulum basit bir şekilde http olarak erisilecek sekilde yapilmistir. E
 
 Helm install komutunu veriyoruz, buradaki ```upgrade --install ``` ifadesi ayni komutu hata almadan sürekli calistirabilmemizi saglar; chart kurulu degil ise kurar, kurulu ise güncelleme yapar. Ayrıca harbor isimli bir namespace yaratarak kurulumu burada gerceklestirmesini istiyoruz.
 
+
 ```
 [root@kemo-test harbor]# helm upgrade --install harbor bitnami/harbor --namespace harbor --create-namespace -f harbor-values.yaml
 
@@ -293,11 +291,6 @@ kubectl get svc --namespace harbor harbor --template "{{ range (index .status.lo
 10.0.60.156
 ```
 
-Eger port-forward yontemi ile erismek isterseniz;
-
-```
-kubectl -n harbor port-forward svc/harbor 1234:443
-```
 
 Not: Erisim url'inde kullanilacak olan ```core.harbor.domain``` domain'ini yukarida elde ettiginiz servis adresi ile birlikte hosts dosyaniza ekleyin;
 
@@ -313,6 +306,10 @@ Tarayıcımızı acıp adresi yaziyoruz;
 ```
 https://core.harbor.domain -- yukarida elde ettiginiz adres
 ```
+
+![harbor-login](assets/01-harbor.jpg)
+
+
 Erisim bilgileri;
 ```
 user: admin
@@ -321,19 +318,35 @@ password: YUKARIDA ELDE ETTIGINIZ PAROLA
 
 Tarayıcıda SSL hatası görürseniz devam et diyerek gecebilirsiniz.
 
+![ssl-error](assets/02-harbor.jpg)
+
+
 
 Login olduktan sonra Projects sayfasına yönlendirileceksiniz; oradan sirasiyla New Project diyerek yeni bir proje yaratiyoruz;
+
+![new-project](assets/03-harbor.jpg)
+
+![new-project2](assets/04-harbor.jpg)
 
 
 
 Daha sonra Docker cli (yada builkit vs.) tarafından pull/push islemlerinde kullanmak üzere bir robot account olusturmamız gerekiyor, bunun icin sol menuden Robot Accounts kısmına geliyoruz.
 
+![robot](assets/07-harbor.jpg)
+
+
 New Robot Account butonunu tıkayarak acilan popup'tan bir robot kullanici ismi veriyoruz, hesabin ne kadar süre gecerli olacagini seciyoruz, default olarak 30 gün gecerlidir, siz bunu degistirebilirsiniz isterseniz. Asagidan hangi projelerde yetkili olacagini belirtiyorsunuz.
+
+![robot2](assets/08-harbor.jpg)
 
 Ayrica isterseniz bu kullanıcının o proje üzereinde hangi izinlere sahip olacagini belirliyorsunuz.
 
+![robot3](assets/09-harbor.jpg)
+![robot4](assets/11-harbor.jpg)
+
 Tamam dediginizde size kullanıcı adi ve parola bilgisini verecek, isterseniz dosyaya export edebilirsiniz bu bilgileri.
 
+![robot5](assets/10-harbor.jpg)
 
 ```
 [root@kemo-test harbor]# cat ~/Downloads/robot\$my-robot.json|jq .
@@ -347,7 +360,7 @@ Tamam dediginizde size kullanıcı adi ve parola bilgisini verecek, isterseniz d
 ```
 
 
-# Örnek bir imajı olusuturp registry'e push etme
+# Örnek bir imaj olusuturup registry'e push etme
 
 Bu domain, Self Signed SSL sertifikasindan dolayi insecure olarak görülecektir, bu nedenle docker daemon ayarlarindan insecure-registry'ler arasina eklmeniz gerekecek; 
 
@@ -431,7 +444,10 @@ latest: digest: sha256:57bfc22c968e92e1cb4440ec2272854118a1bdb8846d78321933a3aa5
 
 ```
 
-Web arayüzünde projects kısmından my-project'e geciyoruz, repositories sekmesine gectigimizde imajimizi gorebilyoruz.
+Web arayüzünde projects kısmından my-project'e geciyoruz, repositories sekmesine gectigimizde imajimizi gorebiliyoruz.
+
+![pushed-image](assets/12-harbor.jpg)
+
 
 Lokal docker daemonumuzdaki imaji görüyoruz
 ```
@@ -467,19 +483,9 @@ root
 ```
 
 Hepsi bu kadar artık bir lokal container imaj repository'miz var.
-
-
-
-
-
-
------
-
-
-
+<br><br>
 
 # Helm Reposuna bir helm chart push etme
-
 
 Bunun için chart-museum plugin'ini kurmamiz gerekiyor, daha fazla bilgi icin; 
 - https://github.com/chartmuseum/helm-push
@@ -546,7 +552,9 @@ drwxr-xr-x   4 root root   93 Oct 13 18:17 my-first-chart
 drwxr-xr-x   2 root root   24 Oct 13 18:19 my-image
 
 ```
+
 helm cm pluginini kullanarak push ediyoruz; burada yine güvensiz ssl'den dolayi ```--insecure``` flag'ini kullaniyoruz
+
 ```
 [root@kemo-test harbor]# helm cm-push my-first-chart-0.1.0.tgz my-harbor --insecure
 Pushing my-first-chart-0.1.0.tgz to my-harbor...
@@ -569,6 +577,7 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 ```
 helm ile chart'imizi ariyoruz ve push ettigimiz chart'imizi my-harbor reposunda oldugunu gözlemliyoruz;
+
 ```
 [root@kemo-test harbor]# helm search repo my-first
 NAME                    	CHART VERSION	APP VERSION	DESCRIPTION                
@@ -587,11 +596,10 @@ total 4
 -rw-r--r-- 1 root root 3609 Oct 13 18:54 my-first-chart-0.1.0.tgz
 
 [root@kemo-test new]# rm my-first-chart-0.1.0.tgz 
-
-
 ```
 
 Helm template komutu ile de template'in render edildigini teyit edelim
+
 ```
 [root@kemo-test tmp]# helm template kemo-test my-harbor/my-first-chart --insecure-skip-tls-verify |head -n 30
 ---
