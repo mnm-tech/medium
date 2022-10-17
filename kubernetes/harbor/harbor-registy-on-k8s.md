@@ -186,7 +186,6 @@ bitnami/zookeeper                           	10.2.2       	3.8.0        	Apache 
 Helm paketinideki template'leri dolduracak default degerleri iceren values.yaml dosyasi kullanılmaktadir. Eger biz ekstra bir deger vermez isek helm bu degerleri kullanarak kurulumu yapar.
 
 
-
 Default degerleri görmek icin paketin icindeki values.yaml dosyasına bakabilirsiniz, bu dosyaya ulasmak icin;
 
 - https://github.com/bitnami/charts/blob/master/bitnami/harbor/values.yaml
@@ -286,6 +285,7 @@ vVWKn6a41C
 ```
 
 Erişim adresini eger bir cloud provider (aws, azure, google cloud vs.) kullaniyorsaniz ya da on-premise tarafında metallb kullanıyor iseniz asagidaki komut ile alabilirsiniz;
+
 ```
 kubectl get svc --namespace harbor harbor --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}"
 10.0.60.156
@@ -307,10 +307,12 @@ Tarayıcımızı acıp adresi yaziyoruz;
 https://core.harbor.domain -- yukarida elde ettiginiz adres
 ```
 
-![harbor-login](assets/01-harbor.jpg)
+[//]: ![harbor-login](assets/01-harbor.jpg)
+<img src="assets/01-harbor.jpg" width="400" height=400>
 
 
 Erisim bilgileri;
+
 ```
 user: admin
 password: YUKARIDA ELDE ETTIGINIZ PAROLA
@@ -372,6 +374,7 @@ Bunun icin /etc/docker/daemon.json dosyasini editlieyerek insecure olarak ekliyo
   "insecure-registries" : ["http://172.16.0.241:5000","core.harbor.domain"]
 }
 ```
+
 Daha fazla bilgi icin;
 
 - https://goharbor.io/docs/1.10/install-config/configure-https/#verify-the-https-connection
@@ -454,7 +457,9 @@ Lokal docker daemonumuzdaki imaji görüyoruz
 [root@kemo-test my-image]# docker images| grep my-app
 core.harbor.domain/my-project/my-app                     latest                42fa098f46a2   About a minute ago   8.91MB
 ```
+
 Bu imaji siliyoruz; 
+
 ```
 [root@kemo-test my-image]# docker rmi core.harbor.domain/my-project/my-app:latest 
 Untagged: core.harbor.domain/my-project/my-app:latest
@@ -474,7 +479,9 @@ Digest: sha256:57bfc22c968e92e1cb4440ec2272854118a1bdb8846d78321933a3aa5549f0e4
 Status: Downloaded newer image for core.harbor.domain/my-project/my-app:latest
 core.harbor.domain/my-project/my-app:latest
 ```
+
 imajı kullanarak bir container yaratiyoruz
+
 ```
 [root@kemo-test my-image]# docker run  -it core.harbor.domain/my-project/my-app:latest 
 / # hostname; whoami
@@ -483,7 +490,6 @@ root
 ```
 
 Hepsi bu kadar artık bir lokal container imaj repository'miz var.
-<br><br>
 
 # Helm Reposuna bir helm chart push etme
 
@@ -498,13 +504,13 @@ https://github.com/chartmuseum/helm-push/releases/download/v0.10.3/helm-push_0.1
 Installed plugin: cm-push
 ```
 
-
-helm reposu olarak ekliyoruz harbor helm repomuzu ; Helm reposunu eklerken güvensiz ssl'den dolayi ```--insecure-skip-tls-verify``` flag'ini kullaniyoruz, ayrıca username ve password belirtiyoruz (robot)
+Helm reposu olarak ekliyoruz harbor helm repomuzu ; Helm reposunu eklerken güvensiz ssl'den dolayi ```--insecure-skip-tls-verify``` flag'ini kullaniyoruz, ayrıca username ve password belirtiyoruz (robot)
 
 ```
 [root@kemo-test harbor]# helm repo add my-harbor https://core.harbor.domain/chartrepo/my-project --username=robot\$my-robot --password=IHzHdjCN5U5RxoZkKKPdarfVasOaK8zO --insecure-skip-tls-verify 
 "my-harbor" has been added to your repositories
 ```
+
 kontrol ediyoruz;
 
 ```
@@ -514,6 +520,7 @@ my-harbor     	https://core.harbor.domain/chartrepo/my-project
 
 
 Push etmek icin bir chart yaratiyoruz
+
 ```
 [root@kemo-test harbor]# helm create my-first-chart
 Creating my-first-chart
@@ -569,6 +576,7 @@ Arayüzden teyit ediyoruz;
 
 
 Lokal Helm repo listemizi güncelliyoruz
+
 ```
 [root@kemo-test harbor]# helm repo update
 Hang tight while we grab the latest from your chart repositories...
@@ -576,6 +584,7 @@ Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "bitnami" chart repository
 Update Complete. ⎈Happy Helming!⎈
 ```
+
 helm ile chart'imizi ariyoruz ve push ettigimiz chart'imizi my-harbor reposunda oldugunu gözlemliyoruz;
 
 ```
