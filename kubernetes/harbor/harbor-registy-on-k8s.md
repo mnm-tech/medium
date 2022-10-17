@@ -529,7 +529,7 @@ my-first-chart/
 └── values.yaml
 
 3 directories, 10 files
-````
+```
 
 helm chart'imizi paketliyoruz;
 
